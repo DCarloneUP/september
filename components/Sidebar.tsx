@@ -1,13 +1,12 @@
-import { Home, Package, Layers, Store, Wallet, Settings, PlusCircle, LogOut } from "lucide-react";
+import { Home, Share2, Mail, Calendar, Settings } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 
 const nav = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/products", label: "Products", icon: Package },
-  { href: "/categories", label: "Categories", icon: Layers },
-  { href: "/stores", label: "Stores", icon: Store },
-  { href: "/finances", label: "Finances", icon: Wallet },
+  { href: "/social", label: "Social", icon: Share2 },
+  { href: "/mail", label: "Mail Marketing", icon: Mail },
+  { href: "/calendar", label: "Calendario", icon: Calendar },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -41,15 +40,8 @@ export default function Sidebar({ active = "/" }: { active?: string }) {
           );
         })}
       </nav>
-      <div className="mt-auto p-3">
-        <button className="w-full inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">
-          <PlusCircle className="h-4 w-4" />
-          Add product
-        </button>
-        <button className="w-full mt-2 inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-gray-50">
-          <LogOut className="h-4 w-4" />
-          Log out
-        </button>
+      <div className="mt-auto p-3 text-xs text-gray-500">
+        <div>Brands: Upsystems · Teamtalent · Replan · Yourmerchandising</div>
       </div>
     </aside>
   );
