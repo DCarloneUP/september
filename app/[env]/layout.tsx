@@ -1,7 +1,7 @@
-import '@/app/globals.css'
-import { ReactNode } from 'react'
-import Sidebar from '@/components/layout/Sidebar'
-import Topbar from '@/components/layout/Topbar'
+import '@/app/globals.css';
+import { ReactNode } from 'react';
+import Sidebar from '@/components/Sidebar';
+import Topbar from '@/components/Topbar';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -14,5 +14,5 @@ export default function Layout({ children }: { children: ReactNode }) {
         </main>
       </div>
     </div>
-  )
+  );
 }
