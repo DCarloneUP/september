@@ -54,9 +54,10 @@ export type Dem = {
 };
 
 export type CalendarItem = {
-  type: 'post' | 'dem' | 'other';
+  // prima era: type: 'post' | 'dem' | 'other';
+  type: string;            // <-- allargo il tipo per accettare qualsiasi string
   brand: BrandName;
-  date: string; // YYYY-MM-DD
+  date: string;            // YYYY-MM-DD
   title: string;
 };
 
