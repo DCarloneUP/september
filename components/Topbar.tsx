@@ -4,28 +4,41 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Settings, User } from 'lucide-react';
 
+// helper semplice inline: validazione env
+const ENV_SLUGS = ['upsystems', 'teamtalent', 'replan', 'yourmerchandising'] as const;
+type EnvSlug = typeof ENV_SLUGS[number];
+function isValidEnvSlug(s: string | undefined | null): s is EnvSlug {
+  return !!s && (ENV_SLUGS as readonly string[]).includes(s);
+}
+
 export default function Topbar() {
   const pathname = usePathname();
-  const pathSegments = pathname.split('/');
-  const env = pathSegments[1] || '';
+  const env = pathname.split('/').filter(Boolean)[0];
+
+  const showSidebarOffset = isValidEnvSlug(env);
+  const ml = showSidebarOffset ? 'ml-64' : '';
 
   return (
-    <header className="h-14 flex items-center justify-between px-4 bg-white/70 backdrop-blur shadow-sm">
+    <header
+      className={`h-14 flex items-center justify-between px-4 bg-white/70 backdrop-blur shadow-sm ${ml}`}
+    >
       {/* Brand + pagina corrente */}
       <div className="text-lg font-semibold text-gray-800">
-        {env ? `Ambiente: ${env}` : 'Dashboard'}
+        {showSidebarOffset ? `Ambiente: ${env}` : 'Seleziona ambiente'}
       </div>
 
       {/* Icone a destra */}
       <div className="flex items-center space-x-4">
-        {/* Icona Settings */}
-        <Link
-          href={`/${env}/settings`}
-          className="text-gray-600 hover:text-gray-800 transition"
-          title="Impostazioni"
-        >
-          <Settings className="w-5 h-5" />
-        </Link>
+        {/* Icona Settings solo se env valido */}
+        {showSidebarOffset && (
+          <Link
+            href={`/${env}/settings`}
+            className="text-gray-600 hover:text-gray-800 transition"
+            title="Impostazioni"
+          >
+            <Settings className="w-5 h-5" />
+          </Link>
+        )}
 
         {/* Avatar utente */}
         <div className="relative">
@@ -35,7 +48,7 @@ export default function Topbar() {
           >
             A
           </div>
-          {/* In futuro: dropdown menu qui */}
+          {/* TODO: dropdown menu utente */}
         </div>
       </div>
     </header>
