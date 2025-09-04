@@ -9,11 +9,12 @@ import {
   YAxis,
   ResponsiveContainer,
   Legend,
-} from "recharts";
-import { followersByMonth } from "@/lib/mock";
+} from 'recharts';
+import { followersByMonth } from '@/lib/mock';
 
+// converte l'ISO "2025-04" in mese (04) per l'asse X
 const data = followersByMonth.map((row) => ({
-  month: row.month.slice(5), // estrae "MM" dall'ISO
+  month: row.month.slice(5),
   Upsystems: row.Upsystems,
   Teamtalent: row.Teamtalent,
   Replan: row.Replan,
@@ -22,7 +23,7 @@ const data = followersByMonth.map((row) => ({
 
 export default function FollowersChart() {
   return (
-    <div style={{ width: "100%", height: 260 }}>
+    <div style={{ width: '100%', height: 260 }}>
       <ResponsiveContainer>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
