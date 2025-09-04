@@ -2,9 +2,9 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Settings, User } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
-// helper semplice inline: validazione env
+// helper inline per validare lo slug ambiente
 const ENV_SLUGS = ['upsystems', 'teamtalent', 'replan', 'yourmerchandising'] as const;
 type EnvSlug = typeof ENV_SLUGS[number];
 function isValidEnvSlug(s: string | undefined | null): s is EnvSlug {
@@ -19,38 +19,39 @@ export default function Topbar() {
   const ml = showSidebarOffset ? 'ml-64' : '';
 
   return (
-    <header
-      className={`h-14 flex items-center justify-between px-4 bg-white/70 backdrop-blur shadow-sm ${ml}`}
-    >
-      {/* Brand + pagina corrente */}
-      <div className="text-lg font-semibold text-gray-800">
-        {showSidebarOffset ? `Ambiente: ${env}` : 'Seleziona ambiente'}
-      </div>
-
-      {/* Icone a destra */}
-      <div className="flex items-center space-x-4">
-        {/* Icona Settings solo se env valido */}
-        {showSidebarOffset && (
-          <Link
-            href={`/${env}/settings`}
-            className="text-gray-600 hover:text-gray-800 transition"
-            title="Impostazioni"
-          >
-            <Settings className="w-5 h-5" />
-          </Link>
-        )}
-
-        {/* Avatar utente */}
-        <div className="relative">
-          <div
-            className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold cursor-pointer"
-            title="Profilo utente"
-          >
-            A
+    // wrapper: spinge a destra se c'è la sidebar e tiene i margini orizzontali
+    <div className={`${ml} px-4 pt-3`}>
+      {/* card “pillola” centrata */}
+      <div className="mx-auto max-w-7xl rounded-xl border border-black/10 bg-white/70 backdrop-blur shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3">
+          {/* titolo */}
+          <div className="text-base sm:text-lg font-semibold text-gray-800">
+            {showSidebarOffset ? `Ambiente: ${env}` : 'Seleziona ambiente'}
           </div>
-          {/* TODO: dropdown menu utente */}
+
+          {/* azioni a destra */}
+          <div className="flex items-center gap-2">
+            {showSidebarOffset && (
+              <Link
+                href={`/${env}/settings`}
+                className="inline-flex items-center rounded-lg border border-black/10 bg-white/60 px-3 py-2 text-sm text-gray-700 hover:bg-white"
+                title="Impostazioni"
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
+              </Link>
+            )}
+
+            {/* avatar semplice */}
+            <div
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-700"
+              title="Profilo utente"
+            >
+              A
+            </div>
+          </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 }
