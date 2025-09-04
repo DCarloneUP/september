@@ -1,23 +1,18 @@
-import Sidebar from '@/components/Sidebar'
-import "@/app/globals.css";
+import '@/app/globals.css'
+import { ReactNode } from 'react'
+import Sidebar from '@/components/layout/Sidebar'
+import Topbar from '@/components/layout/Topbar'
 
-
-export default function EnvironmentLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode
-  params: { env: string }
-}) {
-  const env = params.env
-
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="min-h-screen grid md:grid-cols-[260px_1fr] lg:grid-cols-[288px_1fr]">
       <Sidebar />
-      <main className="flex-1 p-6">
-        <div className="text-sm text-gray-500 mb-2">Ambiente selezionato: <strong>{env}</strong></div>
-        {children}
-      </main>
+      <div className="flex flex-col">
+        <Topbar />
+        <main className="mx-auto max-w-7xl px-4 py-6 grid gap-6">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
