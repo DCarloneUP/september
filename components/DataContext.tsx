@@ -54,8 +54,8 @@ export type Dem = {
 };
 
 export type CalendarItem = {
-  id: string;             // <-- aggiunto: necessario per mergeById
-  type: string;           // tipo libero ('post' | 'dem' | 'event' | ecc.)
+  id: string;
+  type: string;           // ('post' | 'dem' | 'event' | ecc.)
   brand: BrandName;
   date: string;           // YYYY-MM-DD o ISO
   title: string;
@@ -72,6 +72,12 @@ export type DataSet = {
   followers: FollowersRow[];
 };
 
+/* ---------- Defaults ---------- */
+
+function cryptoRandom() {
+  return Math.random().toString(36).slice(2);
+}
+
 const DEFAULT_DATA: DataSet = {
   posts: toPosts(recentPosts as any),
   dem: toDem(recentDEM as any),
@@ -81,11 +87,14 @@ const DEFAULT_DATA: DataSet = {
 
 const STORAGE_KEY = 'september-data-v1';
 
+/* ---------- Context ---------- */
+
 type Ctx = {
   data: DataSet;
   setData: React.Dispatch<React.SetStateAction<DataSet>>;
   importFile: (file: File) => Promise<void>;
   exportJson: () => void;
+  resetData: () => void; // <-- incluso qui
 };
 
 const DataContext = createContext<Ctx | undefined>(undefined);
@@ -93,8 +102,9 @@ const DataContext = createContext<Ctx | undefined>(undefined);
 export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<DataSet>(DEFAULT_DATA);
 
+  // Hydrate da localStorage
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
     if (raw) {
       try {
         setData(JSON.parse(raw));
@@ -104,18 +114,25 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Persist su localStorage
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {
+      /* ignore */
+    }
   }, [data]);
 
   async function importFile(file: File) {
     const ext = (file.name.split('.').pop() || '').toLowerCase();
+
     if (ext === 'json') {
       const text = await file.text();
       const parsed = JSON.parse(text);
       setData(normalizeIncoming(parsed, data));
       return;
     }
+
     if (ext === 'csv') {
       const text = await file.text();
       const { data: rows } = Papa.parse(text, {
@@ -126,6 +143,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setData(importFromRows(rows as any[], data));
       return;
     }
+
     if (ext === 'xlsx' || ext === 'xls') {
       const buf = await file.arrayBuffer();
       const wb = XLSX.read(buf);
@@ -141,6 +159,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setData(next);
       return;
     }
+
     throw new Error('Formato non supportato: usa JSON, CSV o XLSX');
   }
 
@@ -156,8 +175,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
     URL.revokeObjectURL(url);
   }
 
+  function resetData() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+    setData(DEFAULT_DATA);
+  }
+
   return (
-    <DataContext.Provider value={{ data, setData, importFile, exportJson }}>
+    <DataContext.Provider value={{ data, setData, importFile, exportJson, resetData }}>
       {children}
     </DataContext.Provider>
   );
@@ -172,13 +200,12 @@ export function useData() {
 /* ---------- Helpers ---------- */
 
 function normalizeIncoming(incoming: Partial<DataSet>, prev: DataSet): DataSet {
-  const next: DataSet = {
+  return {
     posts: mergeById(prev.posts, toPosts(incoming.posts ?? [])),
     dem: mergeById(prev.dem, toDem(incoming.dem ?? [])),
     calendar: mergeById(prev.calendar, toCalendar(incoming.calendar ?? [])),
     followers: toFollowers(incoming.followers ?? prev.followers),
   };
-  return next;
 }
 
 function toPosts(rows: any[]): Post[] {
@@ -214,7 +241,6 @@ function toCalendar(rows: any[]): CalendarItem[] {
   return rows
     .filter(Boolean)
     .map((r, idx) => {
-      // Normalizza brand e data, e genera un id se assente
       const id = String(r.id ?? r.ID ?? r.Id ?? `cal-${idx}-${cryptoRandom()}`);
       const date = String(r.date ?? r.Date ?? '');
       const title = String(r.title ?? r.Titolo ?? '');
@@ -274,7 +300,7 @@ function importFromRows(rows: any[], prev: DataSet): DataSet {
   if (looksCalendar) {
     return { ...prev, calendar: mergeById(prev.calendar, toCalendar(rows)) };
   }
-  // default: consideralo come POST
+  // default: trattalo come posts
   return { ...prev, posts: mergeById(prev.posts, toPosts(rows)) };
 }
 
@@ -299,7 +325,10 @@ function importFromNamedRows(
 
 function mergeById<T extends { id: string }>(prev: T[], next: T[]): T[] {
   const map = new Map(prev.map((p) => [p.id, p]));
-  next.forEach((n) => map.set(n.id, n));
+  next.forEach((n) => {
+    const existing = map.get(n.id);
+    map.set(n.id, existing ? { ...existing, ...n } : n);
+  });
   return Array.from(map.values());
 }
 
@@ -315,10 +344,6 @@ function toRate(v: any): number {
   if (!s) return 0;
   if (s.endsWith('%')) return toNum(s.slice(0, -1)) / 100;
   return toNum(s) > 1 ? toNum(s) / 100 : toNum(s);
-}
-
-function cryptoRandom() {
-  return Math.random().toString(36).slice(2);
 }
 
 function fixBrand(b: any): BrandName {
