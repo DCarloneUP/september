@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Home, Calendar, Mail, BarChart, Settings } from 'lucide-react';
+import { isValidEnvSlug } from '@/lib/env';
 
 const routes = [
   { href: '', label: 'Home', icon: Home },
@@ -15,24 +16,19 @@ const routes = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const pathSegments = pathname.split('/');
-  const env = pathSegments[1] || '';
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const env = pathSegments[0]; // su /upsystems/..., env = 'upsystems'
+
+  // Non mostrare la sidebar se non siamo dentro un env valido (es. /select-env)
+  if (!isValidEnvSlug(env)) return null;
 
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-gray-900 text-white p-4">
       <h1 className="text-xl font-semibold mb-6">Marketing Data</h1>
       <nav className="flex flex-col space-y-2">
         {routes.map(({ href, label, icon: Icon }) => {
-          // Costruzione del percorso evitando doppio slash
-          const segments: string[] = [];
-          if (env) segments.push(env);
-          if (href) segments.push(href);
-          const routePath = '/' + segments.join('/');
-
-          const isActive =
-            pathname === routePath ||
-            (!href && pathname === `/${env}`) ||
-            (!href && pathname === '/');
+          const routePath = href ? `/${env}/${href}` : `/${env}`;
+          const isActive = pathname === routePath;
 
           return (
             <Link
