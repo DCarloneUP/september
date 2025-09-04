@@ -1,5 +1,5 @@
 import Sidebar from '@/components/Sidebar'
-import '@/app/globals.css'
+import "../../globals.css";
 
 export default function EnvironmentLayout({
   children,
