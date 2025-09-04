@@ -73,11 +73,12 @@ export type DataSet = {
 };
 
 const DEFAULT_DATA: DataSet = {
-  posts: [...recentPosts],
-  dem: [...recentDEM],
-  calendar: [...calendarItems],
-  followers: [...followersByMonth],
+  posts: toPosts(recentPosts as any),
+  dem: toDem(recentDEM as any),
+  calendar: toCalendar(calendarItems as any),      // <-- normalizza brand e type
+  followers: toFollowers(followersByMonth as any),
 };
+
 
 const STORAGE_KEY = 'september-data-v1';
 
