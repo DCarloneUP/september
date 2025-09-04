@@ -1,48 +1,51 @@
-import { Home, Share2, Mail, Calendar, Settings } from "lucide-react";
-import Link from "next/link";
-import clsx from "clsx";
+'use client'
 
-const nav = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/social", label: "Social", icon: Share2 },
-  { href: "/mail", label: "Mail Marketing", icon: Mail },
-  { href: "/calendar", label: "Calendario", icon: Calendar },
-  { href: "/settings", label: "Settings", icon: Settings },
-];
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import {
+  Home,
+  Calendar,
+  Mail,
+  BarChart,
+  Settings,
+} from 'lucide-react'
 
-export default function Sidebar({ active = "/" }: { active?: string }) {
+const routes = [
+  { href: '', label: 'Home', icon: Home },
+  { href: 'social', label: 'Social', icon: BarChart },
+  { href: 'mail', label: 'Mail Marketing', icon: Mail },
+  { href: 'calendar', label: 'Calendario', icon: Calendar },
+  { href: 'settings', label: 'Settings', icon: Settings },
+]
+
+export default function Sidebar() {
+  const pathname = usePathname()
+  const pathSegments = pathname.split('/')
+  const env = pathSegments[1] || ''
+
   return (
-    <aside className="hidden md:flex md:w-64 lg:w-72 flex-col bg-white/70 backdrop-blur border-r">
-      <div className="px-6 py-5">
-        <Link href="/" className="inline-flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-brand-500" />
-          <span className="font-semibold">Vibecoding</span>
-        </Link>
-      </div>
-      <nav className="px-2 space-y-1">
-        {nav.map((item) => {
-          const Icon = item.icon;
-          const isActive = active === item.href;
+    <aside className="w-64 min-h-screen bg-gray-900 text-white p-4">
+      <h1 className="text-xl font-semibold mb-6">📊 VibeCoding</h1>
+      <nav className="flex flex-col space-y-2">
+        {routes.map(({ href, label, icon: Icon }) => {
+          const routePath = `/${env}/${href}`
+          const isActive = pathname === routePath || (href === '' && pathname === `/${env}`)
           return (
             <Link
-              key={item.href}
-              href={item.href}
-              className={clsx(
-                "flex items-center gap-3 rounded-xl px-3 py-2 text-sm",
-                isActive
-                  ? "bg-brand-600 text-white shadow-sm"
-                  : "text-gray-700 hover:bg-gray-100"
+              key={href}
+              href={routePath}
+              className={cn(
+                'flex items-center px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition',
+                isActive && 'bg-gray-700'
               )}
             >
-              <Icon className={clsx("h-4 w-4", isActive && "text-white")} />
-              <span>{item.label}</span>
+              <Icon className="w-4 h-4 mr-3" />
+              {label}
             </Link>
-          );
+          )
         })}
       </nav>
-      <div className="mt-auto p-3 text-xs text-gray-500">
-        <div>Brands: Upsystems · Teamtalent · Replan · Yourmerchandising</div>
-      </div>
     </aside>
-  );
+  )
 }
