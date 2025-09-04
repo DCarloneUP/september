@@ -353,3 +353,44 @@ function fixBrand(b: any): BrandName {
   if (s.includes('replan')) return 'Replan';
   return 'Upsystems';
 }
+
+// --- aggiungi/aggiorna il tipo Post ---
+export type Post = {
+  id: string;
+  brand: BrandName;
+  title: string;     // = copy del post
+  date: string;      // ISO o YYYY-MM-DD
+  impressions: number;
+  clicks: number;
+
+  // NEW (opzionali)
+  channel?: 'linkedin' | 'instagram' | 'facebook' | 'x' | 'youtube' | 'tiktok';
+  format?: 'image' | 'carousel' | 'video' | 'repost' | 'text' | 'link';
+  reach?: number;          // utenti raggiunti
+  reactions?: number;      // like+commenti+condivisioni, a piacere
+  interestPct?: number;    // 0..1 se già calcolato
+  mediaUrl?: string;       // anteprima immagine/video
+};
+
+// --- in toPosts(), dentro map(r) aggiungi le nuove proprietà con fallback ---
+function toPosts(rows: any[]): Post[] {
+  return rows
+    .filter(Boolean)
+    .map((r) => ({
+      id: String(r.id ?? cryptoRandom()),
+      brand: fixBrand(r.brand),
+      title: String(r.title ?? r.copy ?? ''),
+      date: String(r.date ?? ''),
+      impressions: toNum(r.impressions),
+      clicks: toNum(r.clicks),
+
+      channel: (r.channel ?? 'linkedin') as Post['channel'],
+      format: (r.format ?? 'image') as Post['format'],
+      reach: toNum(r.reach),
+      reactions: toNum(r.reactions),
+      interestPct: typeof r.interestPct === 'number' ? r.interestPct : undefined,
+      mediaUrl: r.mediaUrl ? String(r.mediaUrl) : undefined,
+    }))
+    .filter((p) => !!p.title && !!p.date);
+}
+
