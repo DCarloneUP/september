@@ -1,19 +1,21 @@
 // app/[env]/layout.tsx
-import { ReactNode } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Topbar from '@/components/Topbar';
-import { DataProvider } from '@/components/DataContext';
+import React from 'react';
 
-export default function EnvLayout({ children }: { children: ReactNode }) {
+export default function EnvLayout({ children }: { children: React.ReactNode }) {
   return (
-    <DataProvider>
-      <div className="min-h-screen grid md:grid-cols-[260px_1fr] lg:grid-cols-[288px_1fr]">
+    <div className="flex min-h-screen">
+      {/* Sidebar a larghezza fissa */}
+      <aside className="w-64 shrink-0">
         <Sidebar />
-        <div className="flex flex-col">
-          <Topbar />
-          <main className="mx-auto max-w-7xl px-4 py-6 grid gap-6">{children}</main>
-        </div>
+      </aside>
+
+      {/* Colonna principale: Topbar + Page */}
+      <div className="flex-1 flex flex-col">
+        <Topbar /> {/* niente position: fixed */}
+        <main className="flex-1 px-4 py-6">{children}</main>
       </div>
-    </DataProvider>
+    </div>
   );
 }
