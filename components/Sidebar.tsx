@@ -23,10 +23,16 @@ export default function Sidebar() {
       <h1 className="text-xl font-semibold mb-6">📊 VibeCoding</h1>
       <nav className="flex flex-col space-y-2">
         {routes.map(({ href, label, icon: Icon }) => {
-          const routePath = `/${env}/${href}`;
+          // Costruzione del percorso evitando doppio slash
+          const segments: string[] = [];
+          if (env) segments.push(env);
+          if (href) segments.push(href);
+          const routePath = '/' + segments.join('/');
+
           const isActive =
             pathname === routePath ||
-            (href === '' && pathname === `/${env}`);
+            (!href && pathname === `/${env}`) ||
+            (!href && pathname === '/');
 
           return (
             <Link
