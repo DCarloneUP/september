@@ -19,7 +19,7 @@ export default function Sidebar() {
   const env = pathSegments[1] || '';
 
   return (
-    <aside className="w-64 min-h-screen bg-gray-900 text-white p-4">
+    <aside className="fixed inset-y-0 left-0 w-64 bg-gray-900 text-white p-4">
       <h1 className="text-xl font-semibold mb-6">Marketing Data</h1>
       <nav className="flex flex-col space-y-2">
         {routes.map(({ href, label, icon: Icon }) => {
