@@ -1,4 +1,4 @@
-# Vibecoding Dashboard – Next.js (Vercel-ready)
+# Marketing Dashboard – Next.js (Vercel-ready)
 
 Dashboard moderna con:
 - Next.js (App Router)
@@ -7,7 +7,7 @@ Dashboard moderna con:
 - Recharts (grafici client-only)
 
 ## Deploy veloce (senza terminale)
-1. Crea una repo vuota su GitHub (es. `vibecoding-dashboard`).
+1. Crea una repo vuota su GitHub 
 2. Carica qui dentro TUTTI i file di questo progetto (Add file → Upload files).
 3. Vai su **Vercel → New Project → Import GitHub Repository**.
    - Framework: **Next.js**
