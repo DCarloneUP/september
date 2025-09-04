@@ -54,10 +54,10 @@ export type Dem = {
 };
 
 export type CalendarItem = {
-  // prima era: type: 'post' | 'dem' | 'other';
-  type: string;            // <-- allargo il tipo per accettare qualsiasi string
+  id: string;             // <-- aggiunto: necessario per mergeById
+  type: string;           // tipo libero ('post' | 'dem' | 'event' | ecc.)
   brand: BrandName;
-  date: string;            // YYYY-MM-DD
+  date: string;           // YYYY-MM-DD o ISO
   title: string;
 };
 
@@ -75,10 +75,9 @@ export type DataSet = {
 const DEFAULT_DATA: DataSet = {
   posts: toPosts(recentPosts as any),
   dem: toDem(recentDEM as any),
-  calendar: toCalendar(calendarItems as any),      // <-- normalizza brand e type
+  calendar: toCalendar(calendarItems as any),
   followers: toFollowers(followersByMonth as any),
 };
-
 
 const STORAGE_KEY = 'september-data-v1';
 
@@ -214,14 +213,22 @@ function toDem(rows: any[]): Dem[] {
 function toCalendar(rows: any[]): CalendarItem[] {
   return rows
     .filter(Boolean)
-    .map((r) => ({
-      type: (String(r.type || 'post').toLowerCase() as CalendarItem['type']) ??
-        'post',
-      brand: fixBrand(r.brand),
-      date: String(r.date ?? ''),
-      title: String(r.title ?? ''),
-    }))
-    .filter((c) => !!c.title && !!c.date);
+    .map((r, idx) => {
+      // Normalizza brand e data, e genera un id se assente
+      const id = String(r.id ?? r.ID ?? r.Id ?? `cal-${idx}-${cryptoRandom()}`);
+      const date = String(r.date ?? r.Date ?? '');
+      const title = String(r.title ?? r.Titolo ?? '');
+      const type = String((r.type ?? 'post')).toLowerCase();
+
+      return {
+        id,
+        type,
+        brand: fixBrand(r.brand),
+        date,
+        title,
+      };
+    })
+    .filter((c) => !!c.id && !!c.title && !!c.date);
 }
 
 function toFollowers(rows: any[]): FollowersRow[] {
