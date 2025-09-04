@@ -1,9 +1,8 @@
-import '@/app/globals.css';
 import { ReactNode } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Topbar from '@/components/Topbar';
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default function EnvLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen grid md:grid-cols-[260px_1fr] lg:grid-cols-[288px_1fr]">
       <Sidebar />
