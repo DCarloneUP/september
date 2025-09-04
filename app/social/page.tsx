@@ -10,7 +10,7 @@ const FollowersChart = dynamic(() => import("@/components/charts/FollowersChart"
 export default function SocialPage() {
   return (
     <div className="min-h-screen grid md:grid-cols-[260px_1fr] lg:grid-cols-[288px_1fr]">
-      <Sidebar active="/social" />
+      <Sidebar />
       <div className="flex flex-col">
         <Topbar />
         <main className="mx-auto max-w-7xl px-4 py-6 grid gap-6">
