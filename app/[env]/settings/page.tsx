@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useData } from '@/components/DataContext';
+import ResetDataCard from '@/components/settings/ResetDataCard';
 
 interface User {
   id: number;
@@ -98,12 +99,15 @@ export default function SettingsPage() {
         <div className="mt-4 text-sm text-gray-600">
           <p className="font-medium">Formati supportati:</p>
           <ul className="list-disc pl-5">
-            <li>JSON con struttura: {"{ posts:[], dem:[], calendar:[], followers:[] }"}</li>
+            <li>JSON con struttura: {'{ posts:[], dem:[], calendar:[], followers:[] }'}</li>
             <li>CSV (singola entità per file: <i>posts</i> / <i>dem</i> / <i>calendar</i> / <i>followers</i>)</li>
             <li>XLSX con fogli: <b>posts</b>, <b>dem</b>, <b>calendar</b>, <b>followers</b></li>
           </ul>
         </div>
       </section>
+
+      {/* Pulizia dati */}
+      <ResetDataCard />
 
       {/* Ambienti configurabili */}
       <section className="rounded-2xl border bg-white/70 p-4">
