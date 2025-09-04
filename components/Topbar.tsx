@@ -10,7 +10,7 @@ export default function Topbar() {
   const env = pathSegments[1] || '';
 
   return (
-    <header className="flex justify-between items-center h-16 px-6 border-b border-gray-200 bg-white/70 backdrop-blur-md z-10">
+    <header className="h-14 flex items-center justify-between px-4 bg-white/70 backdrop-blur shadow-sm">
       {/* Brand + pagina corrente */}
       <div className="text-lg font-semibold text-gray-800">
         {env ? `Ambiente: ${env}` : 'Dashboard'}
