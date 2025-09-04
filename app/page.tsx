@@ -10,7 +10,7 @@ const SalesChart = dynamic(() => import("@/components/charts/SalesChart"), { ssr
 export default function Page() {
   return (
     <div className="min-h-screen grid md:grid-cols-[260px_1fr] lg:grid-cols-[288px_1fr]">
-      <Sidebar active="/" />
+      <Sidebar />
       <div className="flex flex-col">
         <Topbar />
         <main className="mx-auto max-w-7xl px-4 py-6 grid gap-6">
