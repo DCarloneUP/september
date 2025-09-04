@@ -38,9 +38,16 @@ export type Post = {
   id: string;
   brand: BrandName;
   title: string;
-  date: string; // ISO
+  date: string; // ISO o YYYY-MM-DD
   impressions: number;
   clicks: number;
+  // Nuovi campi opzionali per supportare la tabella estesa:
+  channel?: 'linkedin' | 'instagram' | 'facebook' | 'x' | 'youtube' | 'tiktok';
+  format?: 'image' | 'carousel' | 'video' | 'repost' | 'text' | 'link';
+  reach?: number;
+  reactions?: number;
+  interestPct?: number;
+  mediaUrl?: string;
 };
 
 export type Dem = {
@@ -94,7 +101,7 @@ type Ctx = {
   setData: React.Dispatch<React.SetStateAction<DataSet>>;
   importFile: (file: File) => Promise<void>;
   exportJson: () => void;
-  resetData: () => void; // <-- incluso qui
+  resetData: () => void;
 };
 
 const DataContext = createContext<Ctx | undefined>(undefined);
@@ -102,7 +109,7 @@ const DataContext = createContext<Ctx | undefined>(undefined);
 export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<DataSet>(DEFAULT_DATA);
 
-  // Hydrate da localStorage
+  // Carica dal localStorage all'avvio
   useEffect(() => {
     const raw = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
     if (raw) {
@@ -114,7 +121,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Persist su localStorage
+  // Salva su localStorage a ogni variazione
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -214,10 +221,17 @@ function toPosts(rows: any[]): Post[] {
     .map((r) => ({
       id: String(r.id ?? cryptoRandom()),
       brand: fixBrand(r.brand),
-      title: String(r.title ?? ''),
+      title: String(r.title ?? r.copy ?? ''),
       date: String(r.date ?? ''),
       impressions: toNum(r.impressions),
       clicks: toNum(r.clicks),
+      // mappa i nuovi campi se presenti, altrimenti undefined
+      channel: r.channel ?? undefined,
+      format: r.format ?? undefined,
+      reach: toNum(r.reach),
+      reactions: toNum(r.reactions),
+      interestPct: typeof r.interestPct === 'number' ? r.interestPct : undefined,
+      mediaUrl: r.mediaUrl ? String(r.mediaUrl) : undefined,
     }))
     .filter((p) => !!p.title && !!p.date);
 }
@@ -353,44 +367,3 @@ function fixBrand(b: any): BrandName {
   if (s.includes('replan')) return 'Replan';
   return 'Upsystems';
 }
-
-// --- aggiungi/aggiorna il tipo Post ---
-export type Post = {
-  id: string;
-  brand: BrandName;
-  title: string;     // = copy del post
-  date: string;      // ISO o YYYY-MM-DD
-  impressions: number;
-  clicks: number;
-
-  // NEW (opzionali)
-  channel?: 'linkedin' | 'instagram' | 'facebook' | 'x' | 'youtube' | 'tiktok';
-  format?: 'image' | 'carousel' | 'video' | 'repost' | 'text' | 'link';
-  reach?: number;          // utenti raggiunti
-  reactions?: number;      // like+commenti+condivisioni, a piacere
-  interestPct?: number;    // 0..1 se già calcolato
-  mediaUrl?: string;       // anteprima immagine/video
-};
-
-// --- in toPosts(), dentro map(r) aggiungi le nuove proprietà con fallback ---
-function toPosts(rows: any[]): Post[] {
-  return rows
-    .filter(Boolean)
-    .map((r) => ({
-      id: String(r.id ?? cryptoRandom()),
-      brand: fixBrand(r.brand),
-      title: String(r.title ?? r.copy ?? ''),
-      date: String(r.date ?? ''),
-      impressions: toNum(r.impressions),
-      clicks: toNum(r.clicks),
-
-      channel: (r.channel ?? 'linkedin') as Post['channel'],
-      format: (r.format ?? 'image') as Post['format'],
-      reach: toNum(r.reach),
-      reactions: toNum(r.reactions),
-      interestPct: typeof r.interestPct === 'number' ? r.interestPct : undefined,
-      mediaUrl: r.mediaUrl ? String(r.mediaUrl) : undefined,
-    }))
-    .filter((p) => !!p.title && !!p.date);
-}
-
