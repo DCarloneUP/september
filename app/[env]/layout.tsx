@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
-import Sidebar from '@/components/Sidebar';
-import Topbar from '@/components/Topbar';
+// app/[env]/layout.tsx
+import { ReactNode } from 'react'
+import Sidebar from '@/components/Sidebar'
+import Topbar from '@/components/Topbar'
 
 export default function EnvLayout({ children }: { children: ReactNode }) {
   return (
@@ -13,5 +14,5 @@ export default function EnvLayout({ children }: { children: ReactNode }) {
         </main>
       </div>
     </div>
-  );
+  )
 }
