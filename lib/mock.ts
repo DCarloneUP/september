@@ -34,4 +34,10 @@ export function monthLabel(iso: string) {
   const [y, m] = iso.split("-").map(Number);
   const d = new Date(y, m - 1);
   return d.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
-}
+};
+
+export const users = [
+  { id: 1, username: "admin", role: "Super Admin", brands: ["Upsystems", "TeamTalent"] },
+  { id: 2, username: "marketing_user", role: "Editor", brands: ["YourMerchandising"] },
+]
+
