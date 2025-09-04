@@ -1,4 +1,4 @@
-import Sidebar from '@/components/sidebar'
+import Sidebar from '@/components/Sidebar'
 import '@/app/globals.css'
 
 export default function EnvironmentLayout({
